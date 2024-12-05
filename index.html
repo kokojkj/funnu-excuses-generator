@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funny Excuses Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #excuseOutput {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #generateButton, #categorySelect {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        #generateButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #generateButton:hover {
+            background-color: #45a049;
+        }
+        #categorySelect {
+            border: 1px solid #ddd;
+        }
+        #loadingIndicator {
+            display: none;
+            color: #666;
+        }
+        .powered-by {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        .powered-by a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .powered-by a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Funny Excuses Generator</h1>
+        <select id="categorySelect">
+			<option value="funny">Funny Excuses</option>
+            <option value="children">Children Excuses</option>
+            <option value="family">Family Excuses</option>
+            <option value="unbelievable">Unbelievable Excuses</option>
+            <option value="developer">Developer Excuses</option>
+        </select>
+        <button id="generateButton">Generate Excuse</button>
+        <div id="loadingIndicator">Generating excuse...</div>
+        <div id="excuseOutput">Click "Generate Excuse" to start!</div>
+        
+        <div class="powered-by">
+            API by <a href="https://excuser-three.vercel.app/" target="_blank">Excuser API</a>
+        </div>
+    </div>
+
+    <script>
+        const generateButton = document.getElementById('generateButton');
+        const excuseOutput = document.getElementById('excuseOutput');
+        const categorySelect = document.getElementById('categorySelect');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        const apiConfig = {
+            family: 'https://excuser-three.vercel.app/v1/excuse/family',
+            children: 'https://excuser-three.vercel.app/v1/excuse/children',
+            funny: 'https://excuser-three.vercel.app/v1/excuse/funny',
+            unbelievable: 'https://excuser-three.vercel.app/v1/excuse/unbelievable',
+            developer: 'https://excuser-three.vercel.app/v1/excuse/developers'
+        };
+
+        async function generateExcuse() {
+            const category = categorySelect.value;
+            const apiUrl = apiConfig[category];
+
+            excuseOutput.textContent = '';
+            loadingIndicator.style.display = 'block';
+            generateButton.disabled = true;
+
+            try {
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch excuse');
+                }
+
+                const data = await response.json();
+                
+                const excuse = data[0].excuse;
+
+                loadingIndicator.style.display = 'none';
+                excuseOutput.textContent = excuse;
+            } catch (error) {
+                loadingIndicator.style.display = 'none';
+                excuseOutput.textContent = 'could not generate an excuse. Please try again.';
+                console.error('Excuse generation error:', error);
+            } finally {
+                generateButton.disabled = false;
+            }
+        }
+
+        generateButton.addEventListener('click', generateExcuse);
+    </script>
+</body>
+</html>
